@@ -119,8 +119,10 @@ num_hyperparameters = [18, 18]
 sum_hyperparameters = sum(num_hyperparameters)
 total_hyperparameters = num_seeds * sum_hyperparameters
 
-
-
+#
+#
+#
+#
 
 full_ctw_scores = []
 full_soft_dtw_gi_scores = []
@@ -158,11 +160,18 @@ for name in motion_name_list:
 
     ctw_loss = ctw(robot_data, human_data)
 
-
-
-
-    _, _, dtw_gi_loss = dtw_gi(robot_data, human_data) # type: ignore
-    soft_dtw_gi_loss = softdtw_gi(robot_data, human_data)
+    gamma = 0.01
+    dtw_gi_loss = dtw_gi(robot_data, human_data, max_iter=100, use_bias=True)[-1]
+    soft_dtw_gi_loss = np.sqrt(
+        softdtw_gi(
+            robot_data,
+            human_data,
+            gamma=gamma,
+            normalize=True,
+            max_iter=100,
+            early_stopping_patience=10,
+        )
+    )
 
     full_ctw_scores.append(ctw_loss)
     full_dtw_gi_scores.append(dtw_gi_loss)
@@ -171,7 +180,7 @@ for name in motion_name_list:
     full_tags.append(tag)
     full_names.append(name)
 
-    print("score for num " + str(i) + "/" +name + " is: " + str(dtw_gi_loss))
+    print("score for num " + str(i) + "/" + name + " is: " + str(dtw_gi_loss))
 
 
 for i, tag in enumerate(
@@ -209,11 +218,18 @@ for i, tag in enumerate(
 
         ctw_loss = ctw(robot_data, human_data)
 
-
-
-        
-        _, _, dtw_gi_loss = dtw_gi(robot_data, human_data) # type: ignore
-        soft_dtw_gi_loss = softdtw_gi(robot_data, human_data)
+        gamma = 0.01
+        dtw_gi_loss = dtw_gi(robot_data, human_data, max_iter=100, use_bias=True)[-1]
+        soft_dtw_gi_loss = np.sqrt(
+            softdtw_gi(
+                robot_data,
+                human_data,
+                gamma=gamma,
+                normalize=True,
+                max_iter=100,
+                early_stopping_patience=10,
+            )
+        )
 
         full_ctw_scores.append(ctw_loss)
         full_dtw_gi_scores.append(dtw_gi_loss)
@@ -222,7 +238,7 @@ for i, tag in enumerate(
         full_tags.append(tag)
         full_names.append(name)
 
-        print("score for num " + str(i) + "/" +name + " is: " + str(dtw_gi_loss))
+        print("score for num " + str(i) + "/" + name + " is: " + str(dtw_gi_loss))
 
         # temp_ctw_scores.append(ctw_loss)
         # temp_dtw_gi_scores.append(dtw_gi_loss)
